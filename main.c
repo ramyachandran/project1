@@ -2,6 +2,7 @@
 #include "omp.h"
 
 // hi
+//example
 int main() {
     omp_set_num_threads(1000);
 
