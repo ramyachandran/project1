@@ -1,0 +1,93 @@
+#include <stdio.h>
+int main(int argc,char* arg[v]){
+long int number_tosses,number_in_circle:
+        int thr_cunt,i;
+        double x,y,dist;
+if( argc !=3) usage(arg[0]);
+
+thread_count=strtol(argv[1],NULL,10);
+number_tosses=strtoll(arg[2],null,10);
+if( thread_count<1 || number_tosses<1) Usage(argv[0]);
+num_in_circle=0;
+srandom(0);
+reduction (+: num_in_circle) private(x,y,dis)
+for(i=0;i<number_tosses;i++)
+{
+x=num_ale();
+      y=num_ale();
+}
+dis =x*x+y*y;
+if(dis<=1)
+{
+number_in_circle +=1;
+}
+}
+double Pi=4*number_in_circle/((double) number_tosses);
+printf("pi=%.14f\n",pi);
+return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
