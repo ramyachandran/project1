@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    printf("Hello, World!\n");\
+    void general_b(
+            float min_measure,
+            float max_measure,
+            float bin_magi[],
+            int bin_counts[],
+            int bin_count )
+{
+float bin_width;
+int i;
+    bin_width= (max_measure-min_measure)/bin_count;
+#pragma omp parallel for num_threads(thread_count)\
+    private(i)
+for(i=0;i<bin_count;i++){
+    bin_magi[i]=min_measure + (i+1)*bin_width;
+    {
+        bin_magi[i]=min_meas+(i+1)*bin_width;
+        bin_counts[i]=0;
+    }
+# ifdef DEBUG
+    printf(bin_maximum=");
+    for(i=0;i<bin_count;i++)
+    printf("\n");
+#endif
+}
+        void General_data(
+                float min_measure,
+                float max_measure,
+                 float data[],
+                int data_count){
+                int i;
+
+            srandom(0);
+default(none) shared(data,min_measure,max_measure,data_count)
+            for(i=0;i<data_count;i++){
+                data[i]= min_measure+(max_measure-min_measure)*random()/((double) RAND_MAX):
+            }
+#define DEBUG
+            printf("data=");
+            for(i=0;i<data_count;i++)
+            printf("%4.3f",data[i]);
+            printf("\n");
+#endif
+        }
+/* count the number of values in each bin*/
+        private(bin,i);
+                for(i=0;i<data_count;i++) {
+                    bin = which_bin(datat[i], bin_magi, bin_count, min_measure);
+#pragma omp critical
+                    bin_counts[bin]++;
+                }
+    }
+}
+
+
