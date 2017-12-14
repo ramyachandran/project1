@@ -12,9 +12,9 @@
 #define nx 9000
 #define ny 9000
 
-int maxiter= 2000;
-int myRank;
-int commSize;
+int maxiter= 3000;
+int myRan;
+int comSize;
 
 void calc_pixel_value(int calcny, int calcnx, int calcMSet[calcnx*calcny], int calcmaxiter);
 void calcSet(int startIdx, int endIdx, int chunkSize);
@@ -30,21 +30,21 @@ int main(int argc, char *argv[])
     int *MSet = (int*)malloc(nx*ny*sizeof(int));
     memset(MSet, 0, nx*ny*sizeof(int));
     //Get rank number and total number of processes that were launched
-    MPI_Comm_size(MPI_COMM_WORLD, &commSize);
-    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+    MPI_Comm_size(MPI_COMM_WORLD, &comSize);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRan);
     //Check to see if the resolution and number of processes are compatable.
-    if (myRank == 0)
+    if (myRan == 0)
     {
-        if ((nx*ny)%(commSize-1) != 0)
+        if ((nx*ny)%(comSize-1) != 0)
         {
             printf("Incompatable number of processes requested\nExiting...\n");
             exit(EXIT_FAILURE);
         }
     }
     int totalRes = (nx*ny);
-    int chunkSize = totalRes/(commSize-1);
+    int chunkSize = totalRes/(comSize-1);
 
-    if (myRank == 0)
+    if (myRan == 0)
         printf("Starting Calculation of Mandelbrot set...\n");
 
     int i;
@@ -56,51 +56,48 @@ int main(int argc, char *argv[])
     {
         int myStart = 0, myEnd = 0;
         int* tempMSet = (int*)malloc((chunkSize)*sizeof(int));
-        for (i = 1; i<commSize; i++)
+        for (i = 1; i<comSize; i++)
         {
-            myStart = (chunkSize/ny)*(i-1);
-            myEnd = (myStart + (chunkSize/ny));
+            rStart = (chunkSize/ny)*(i-1);
+            rEnd = (myStart + (chunkSize/ny));
 
-            //send to each node
-            //tag 0 = startIdx
-            //tag 1 = endIdx
-            //tag 2 = chunkSize
+           
 
-            MPI_Send(&myStart, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-            MPI_Send(&myEnd, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
+            MPI_Send(&rStart, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+            MPI_Send(&rEnd, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
             MPI_Send(&chunkSize, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
             printf("Sent chunk data to node %d\n", i);
         }
         int sender = -1;
         MPI_Status status;
         //Recieve the completed chunks and memcpy it onto MSet
-        for (i = 1; i<commSize; i++)
+        for (i = 1; i<comSize; i++)
         {
             MPI_Recv(tempMSet, chunkSize, MPI_INT, MPI_ANY_SOURCE, 3, MPI_COMM_WORLD, &status);
             sender = status.MPI_SOURCE;
             printf("Recieved chunk from %d\n",sender);
             memcpy(MSet+(chunkSize*(sender-1)), tempMSet, chunkSize*sizeof(int));
-            printf("Memcpy'd data from rank %d into MSet\n", sender);
+            printf("Memcpy'd data fr %d into MSet\n", sender);
             sender = -1;
         }
     }
         //This block is only exectued on the rest of the processes. First, it will recive the data from rank 0 then Do the same calculation on the smaller
         //set of points then send the completed region back to the manager rank.
-    else if (myRank != 0)
+    else if (myRan != 0)
     {
-        int myStart = 0;
-        int myEnd = 0;
+        int rStart = 0;
+        int rEnd = 0;
         int chunkSize = 0;
         MPI_Status status;
-        MPI_Recv(&myStart, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-        MPI_Recv(&myEnd, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+        MPI_Recv(&rStart, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&rEnd, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
         MPI_Recv(&chunkSize, 1, MPI_INT, 0, 2, MPI_COMM_WORLD, &status);
         //DO THE MANDEL
-        calcSet(myStart, myEnd, chunkSize);
+        calcSet(rStart, rEnd, chunkSize);
     }
     MPI_Barrier(MPI_COMM_WORLD);
     //Once the final array (MSet) is completed, it will call the same tiff writing funcion from tiff.c and write the image out as output.tif
-    if (myRank == 0)
+    if (rRank == 0)
     {
         printf("Starting to write image\n");
         calc_pixel_value(nx,ny,MSet,maxiter);
@@ -206,7 +203,7 @@ void calcSet(int startIdx, int endIdx, int chunkSize)
             count++;
         }
     }
-    printf("Sendmaster from rank %d\n", myRank);
+    printf("Sendmaster from rank %d\n", myRan);
     //Send the array back to be memcpy'ed into MSet
     MPI_Send(localMSet, chunkSize, MPI_INT, 0, 3, MPI_COMM_WORLD);
 }
